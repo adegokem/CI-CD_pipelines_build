@@ -1,20 +1,21 @@
 version: 2.1
 
-commands:
-    print_pipeline_id:
-      description: "A command to print Circle CI workflow ID from its environment variable"
-      steps:
-        - run: echo ${CIRCLE_WORKFLOW_ID}
-
 jobs:
-  my_job:
+    create_infrastructure:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
-      - print_pipeline_id 
+      - checkout
+      - run:
+        name: Create Cloudformation Stack
+        command: |
+          aws cloudformation deploy \
+            --template-file template.yml \
+            --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+            --region us-west-2
 
 workflows:
   my_workflows:
     jobs:
-      - my_job
+      - create_infrastructure
             
