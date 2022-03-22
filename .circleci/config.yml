@@ -19,25 +19,44 @@ version: 2.1
 #     jobs:
 #       - create_infrastructure
 
-jobs: 
-  configure_infrastructure:
+# jobs: 
+#   configure_infrastructure:
+#     docker:
+#       - image: python:3.7-alpine3.11
+#     steps:
+#       - checkout
+#       - add_ssh_keys:
+#           fingerprints: ["40:ae:0f:4b:95:0a:e9:cd:18:46:75:28:1d:ff:df:c2"]
+#       - run:
+#           name: Install Ansible
+#           command: |
+#             apk add --update ansible
+#       - run:
+#           name: Configure EC2 instance
+#           command:  |
+#             ansible-playbook -i inventory.txt main-remote.yml
+
+
+jobs:
+  smoke_test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: alpine:latest
     steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["40:ae:0f:4b:95:0a:e9:cd:18:46:75:28:1d:ff:df:c2"]
+      - run: apk add --update curl
       - run:
-          name: Install Ansible
+          name: Smoke Test
           command: |
-            apk add --update ansible
-      - run:
-          name: Configure EC2 instance
-          command:  |
-            ansible-playbook -i inventory.txt main-remote.yml
+            URL="https://blog.udacity.com/"
+            if curl -s --head ${URL}
+            then
+              return 0
+            else
+              return 1
+            fi 
 
 workflows:
   my_workflows:
     jobs:
-      - configure_infrastructure 
+      - smoke_test
+      
             
