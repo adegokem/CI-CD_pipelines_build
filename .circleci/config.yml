@@ -28,7 +28,7 @@ jobs:
       - image: alpine:latest
     steps:
       - run:
-          name: Test jon
+          name: Test jonjob
           command: return 1
       - destroy_environment
 
